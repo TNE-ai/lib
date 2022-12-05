@@ -248,7 +248,7 @@ if eval "[[ ! -v $lib_name ]]"; then
 		fi
 	}
 
-	# linux_model: returns the model of the machine as manufacturer is set to Notebook 
+	# linux_model: returns the model of the machine as manufacturer is set to Notebook
 	# typical model is NV14J for Juno Neptune 14J
 	linux_model() {
 		if command -v dmidecode >/dev/null; then
