@@ -114,6 +114,10 @@ run_models() {
 			echo "  – $model: skipped (Max plan OAuth — validated via Claude Code session)"
 			continue
 			;;
+		gpt-image-*)
+			echo "  – $model: skipped (image-generation model — only supports /v1/images/generations, not chat/completions)"
+			continue
+			;;
 		*-proxy)
 			reply=$(curl -sf --max-time 30 -X POST \
 				"http://localhost:$LITELLM_PORT/v1/chat/completions" \
