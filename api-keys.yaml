@@ -196,6 +196,13 @@ OPENROUTER_API_KEY:
   models_url: https://openrouter.ai/api/v1/models
   models_pattern: "nvidia/nemotron"
   ccr_provider: openrouter
+  # nvidia/nemotron size tiers: nano (low) / super (high) / ultra (max).
+  # No std tier -- nearest-tier fallback (_apply_tier_fallback) fills it from
+  # the nearest defined neighbor (walks down to flash, else up to pro).
+  tiers:
+    flash: { keyword: nano,  default: nvidia/nemotron-3-nano,  litellm_alias: nemotron-flash }
+    pro:   { keyword: super, default: nvidia/nemotron-3-super, litellm_alias: nemotron-pro }
+    ultra: { keyword: ultra, default: nvidia/nemotron-3-ultra, litellm_alias: nemotron-ultra }
 
 # ── Google ────────────────────────────────────────────────────────────────────
 GEMINI_API_KEY:
