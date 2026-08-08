@@ -34,6 +34,23 @@ sync-plugin: sync-plugin-lib sync-plugin-bin
 
 # ── Studio / user repo targets ────────────────────────────────────────────────
 
+PLUGIN_REPO ?= $(WS_DIR)/git/src/sys/tne-plugins
+PLUGIN_SCRIPTS ?= $(PLUGIN_REPO)/plugins/tne/scripts
+
+## sync-plugin-lib: distill src/lib/ into plugins/tne/lib/
+.PHONY: sync-plugin-lib
+sync-plugin-lib:
+	$(PLUGIN_SCRIPTS)/sync-lib.sh $(PLUGIN_REPO)
+
+## sync-plugin-bin: distill src/bin/ launchers into plugins/tne/bin/
+.PHONY: sync-plugin-bin
+sync-plugin-bin:
+	$(PLUGIN_SCRIPTS)/sync-bin.sh $(PLUGIN_REPO)
+
+## sync-plugin: run both lib and bin sync
+.PHONY: sync-plugin
+sync-plugin: sync-plugin-lib sync-plugin-bin
+
 STUDIO_SUBMODULE_DIR ?= $(WS_DIR)/git/src/user
 STUDIO_AWS_S3        ?= s3://bp-authoring-files/d
 STUDIO_PREFIX        ?= studio
