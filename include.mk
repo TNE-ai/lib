@@ -279,11 +279,24 @@ pre-commit: install-pre-commit
 	; fi
 
 ## install-pre-commit: Install precommit (get prebuilt .pre-commit-config.yaml from @richtong/lib)
+## Handles repos that set core.hooksPath (e.g. to .githooks): pre-commit install always
+## writes to .git/hooks/ but git looks in core.hooksPath instead. We copy installed hooks
+## across so both locations are in sync and git actually fires them on commit/push.
 .PHONY: install-pre-commit
 install-pre-commit: install-repo
 	if [[ -e .pre-commit-config.yaml ]]; then \
 		$(RUN) pre-commit install || true && \
-		pre-commit install --hook-type commit-msg \
+		pre-commit install --hook-type commit-msg || true && \
+		pre-commit install --hook-type pre-push || true && \
+		if HOOKS_PATH=$$(git config core.hooksPath 2>/dev/null); then \
+			mkdir -p "$$HOOKS_PATH" && \
+			for hook in pre-commit commit-msg pre-push; do \
+				if [[ -e ".git/hooks/$$hook" && ! -e "$$HOOKS_PATH/$$hook" ]]; then \
+					cp ".git/hooks/$$hook" "$$HOOKS_PATH/$$hook" && \
+					echo "Copied .git/hooks/$$hook → $$HOOKS_PATH/$$hook (core.hooksPath override)"; \
+				fi; \
+			done; \
+		fi \
 	; fi
 
 ## pre-commit-update: Bump all pre-commit versions

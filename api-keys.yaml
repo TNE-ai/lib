@@ -401,9 +401,9 @@ BROWSERBASE_PROJECT_ID:
   op_field: "project id"
   op_vault: DevOps
 
-BROWSERLESS_API_TOKEN:
-  op_item: "Browserless API Key Dev"
-  op_vault: DevOps  # field is "api key" — mulmocast names it token not key
+BROWSERBASE_API_KEY:
+  op_item: "BrowserBase API Key Dev"
+  op_vault: DevOps
 
 FIRECRAWL_API_KEY:
   op_item: "firecrawl API Key Dev"

@@ -218,7 +218,7 @@ litellm: litellm-check-version
 #   make ai HARNESS=aider          # aider
 #   make ai HARNESS=codex          # codex CLI (plan provider via CLIProxyAPI)
 # MODEL: any model_name from $(LITELLM_CFG). Run 'make ai-models' to list all.
-#   make ai-run MODEL=kimi-k2.6         # Kimi K2 via $19/mo Coding Plan
+#   make ai-run MODEL=kimi-k2.6         # Kimi K2 via Alibaba MaaS Team Edition (PLAN)
 #   make ai-run MODEL=gemini-2.5-flash  # Gemini Flash (PAYG)
 #   make ai-run MODEL=lls/qwen/qwen3.6-27b  # local GPU via llama-server
 #
@@ -229,7 +229,7 @@ litellm: litellm-check-version
 #        When a custom base URL is set, Claude Code skips the model name allowlist —
 #        it forwards whatever string you give to the endpoint as-is.
 #     2. LiteLLM maps the model_name you pass to the real provider and model behind it.
-#        "kimi-k2.6" → claude-code-proxy (localhost:3457) → Kimi API
+#        "kimi-k2.6" → Alibaba MaaS token-plan endpoint (ALIBABA_PLAN_KEY)
 #        "lls/google/gemma-4-e2b" → llama-server (localhost:8081) → local GGUF
 #   So any model_name registered in config.yaml (~/.config/litellm/config.yaml) works.
 #   Run 'make ai-models' to list all available names.
@@ -257,7 +257,7 @@ MODEL              ?=
 ##
 ## Provider billing model:
 ##   Anthropic : PLAN  — Max plan OAuth token forwarded by LiteLLM; no api_key = no PAYG billing
-##   Kimi      : PLAN  — $19/mo Coding Plan via claude-code-proxy bridge (:3457)
+##   Kimi      : PLAN  — Alibaba MaaS Team Edition (ALIBABA_PLAN_KEY); ccproxy deprecated
 ##   Gemini    : PLAN  — Google One AI Premium OAuth via cliproxyapi bridge (:8317)
 ##   Z.AI/GLM  : PLAN  — same API key routes to coding plan quota via api.z.ai/api/anthropic
 ##   MiniMax   : PLAN  — Token Plan ~$10/mo; MINIMAX_PLAN_KEY routes to plan quota
@@ -266,7 +266,7 @@ MODEL              ?=
 ##   OpenRouter: PAYG  — markup on underlying models; use for models with no direct plan
 ##
 ##   make ai-run                               # claude via Max plan (default)   [PLAN]
-##   make ai-run MODEL=kimi-k2.6              # Kimi K2.6 Coding Plan $19/mo    [PLAN]
+##   make ai-run MODEL=kimi-k2.6              # Kimi K2.6 Alibaba MaaS Team Edition    [PLAN]
 ##   make ai-run MODEL=glm-5.1               # GLM-5.1 Z.AI coding plan         [PLAN]
 ##   make ai-run MODEL=minimax-m2.7          # MiniMax M2.7 Token Plan          [PLAN]
 ##   make ai-run MODEL=gpt-5.5               # ChatGPT/Codex plan (auth: make ai-auth PROVIDER=codex) [PLAN]
@@ -333,7 +333,7 @@ ai-help:
 		| while IFS= read -r name; do \
 			case "$$name" in \
 			claude*)   tag="PLAN -- Anthropic Max" ;; \
-			kimi*)     tag="PLAN -- Kimi Coding Plan" ;; \
+			kimi*)     tag="PLAN -- Kimi MaaS Team Edition" ;; \
 			glm*)      tag="PLAN -- Z.AI coding plan" ;; \
 			qwen*)     tag="PLAN -- Alibaba plan (ALIBABA_PLAN_KEY)" ;; \
 			minimax*)  tag="PLAN -- MiniMax token plan" ;; \
@@ -377,7 +377,7 @@ ai-help:
 ## ai-warn-bridges: start subscription bridges if not running; warn to auth if they stay down
 ## Called automatically by make ai. Non-interactive — never prompts for credentials.
 ## If a bridge needs first-time auth, run: make ai-auth PROVIDER=kimi|gemini|codex
-##   kimi         — claude-code-proxy  :3457  starts automatically if already authenticated
+##   kimi         — Alibaba MaaS endpoint (no local proxy needed)
 ##   gemini/codex — CLIProxyAPI        :8317  starts automatically if already authenticated
 .PHONY: ai-warn-bridges
 ai-warn-bridges:
@@ -387,7 +387,7 @@ ai-warn-bridges:
 ## ai-auth: log in to all AI providers (run once per machine or after token expiry)
 ##   make ai-auth              # all providers
 ##   make ai-auth PROVIDER=claude   # claude /login
-##   make ai-auth PROVIDER=kimi     # claude-code-proxy kimi auth login
+##   make ai-auth PROVIDER=kimi     # (no longer required — uses ALIBABA_PLAN_KEY)
 ##   make ai-auth PROVIDER=gemini   # cliproxyapi -login  (Google OAuth → ~/.cli-proxy-api/)
 ##   make ai-auth PROVIDER=codex    # cliproxyapi -codex-login
 PROVIDER ?=
@@ -636,8 +636,8 @@ temporal:
 ccr:
 	CCR_PORT=$(CCR_PORT) TNE_LOG_DIR=$(TNE_LOG_DIR) $(BIN_DIR)/start-ccr.sh
 
-## Kimi Coding Plan bridge — started automatically by make ai via ai-warn-bridges.
-## Use: make ai-run MODEL=kimi-k2.6   (canonical path — routes through LiteLLM :4000 → :3457)
+## Kimi ccproxy bridge — legacy; kimi-k2.6 now uses Alibaba MaaS (no local proxy needed).
+## Use: make ai-run MODEL=kimi-k2.6   (canonical path — routes through LiteLLM :4000 → Alibaba MaaS)
 ## Auth: make ai-auth PROVIDER=kimi   (one-time OAuth login)
 KIMI_CLAUDE_PROXY_PORT ?= 3457
 KIMI_CLAUDE_PROVIDER   ?= kimi
