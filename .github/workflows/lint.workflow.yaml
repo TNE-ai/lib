@@ -35,7 +35,7 @@ jobs:
     steps:
       - name: Checkout action
         # bump from v3 to v4 to move from node 16 to node 20
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           lfs: true
           # The default GITHUB_TOKEN token does note work for submodules
@@ -78,7 +78,7 @@ jobs:
     runs-on: ${{ github.event.repository.visibility == 'public' && 'ubuntu-latest' || vars.RUNNER_LABEL || 'ubuntu-latest' }}
     steps:
       - name: Checkout action
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           lfs: true
           # submodules should be tested one at a time
