@@ -32,9 +32,25 @@
 #   ~/.bash_profile → ~/.profile → ~/.bashrc
 #
 # ─── ZSH (macOS default since Catalina) ──────────────────────────────────────
-# Login shell:   ~/.zprofile → ~/.zshrc
-# Non-login:     ~/.zshrc only (zshrc is always sourced, so no gap)
-# Put PATH in ~/.zshrc — no special chaining needed for zsh.
+# Canonical startup chain (per zsh.sourceforge.io/Intro/intro_3.html):
+#   ALL invocations:            ~/.zshenv  (incl. scripts, cron, IDE plugins)
+#   Login + interactive:        ~/.zshenv -> ~/.zprofile -> ~/.zshrc -> ~/.zlogin
+#   Non-login + interactive:    ~/.zshenv -> ~/.zshrc
+#   Non-interactive (scripts):  ~/.zshenv only
+#
+# macOS quirk: Terminal.app spawns LOGIN shells by default, so .zprofile runs
+# on every new terminal window. But subshells (Vim shell, Claude Code, pipe
+# to a command) are NON-LOGIN -> .zprofile does NOT run for them.
+#
+# .zprofile does NOT auto-source .profile. Per r-cto-dev145, the install
+# bootstrap (pre-install.sh) calls config_profile_no_script_wire_login to
+# add an explicit `[[ -f ~/.profile ]] && . ~/.profile` line to both
+# .zprofile AND .bash_profile -- so shell-agnostic env exports in ~/.profile
+# reach both shells.
+#
+# Don't put PATH in ~/.zshrc -- subshells inherit it from .profile via the
+# login chain. Only put zsh-specific PATH manipulation in .zshrc (e.g.
+# `fpath+=(...)` for zsh completion functions).
 #
 # ─── THE CRITICAL GAP ─────────────────────────────────────────────────────────
 # Both macOS and Linux have the same problem: non-login bash shells (subshells,
