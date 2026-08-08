@@ -181,14 +181,19 @@ run_quality() {
 			"http://localhost:$LITELLM_PORT/v1/chat/completions" \
 			-H "Content-Type: application/json" \
 			-H "Authorization: Bearer $_key" \
-			-d "{\"model\":\"$model\",\"messages\":[{\"role\":\"user\",\"content\":\"What is 2+2? Reply with just the digit.\"}],\"max_tokens\":10}" \
+			-d "{\"model\":\"$model\",\"messages\":[{\"role\":\"user\",\"content\":\"What is 2+2? Reply with just the digit.\"}],\"max_tokens\":512}" \
 			2>/dev/null |
-			python3 -c 'import sys,json; d=json.load(sys.stdin); m=d["choices"][0]["message"]; print((m.get("content") or m.get("reasoning_content","")).strip()[:20])' 2>/dev/null)
+			python3 -c 'import sys,json; d=json.load(sys.stdin); m=d["choices"][0]["message"]; print((m.get("content") or m.get("reasoning_content","")).strip())' 2>/dev/null)
+		# Grep the FULL reply for the expected digit — thinking models emit the
+		# answer after reasoning, so never truncate before the check. Display a
+		# one-line preview only. max_tokens=512 gives reasoning models room to
+		# reach the digit (max_tokens=10 cut them off mid-thought).
+		preview=$(printf '%s' "$reply" | tr '\n' ' ' | cut -c1-60)
 		if echo "$reply" | grep -q "4"; then
-			echo "  ✓ $model: '$reply'"
+			echo "  ✓ $model: '$preview'"
 			((pass++)) || true
 		else
-			echo "  ✗ $model: expected '4', got '$reply'"
+			echo "  ✗ $model: expected '4', got '$preview'"
 			((fail++)) || true
 		fi
 	done
