@@ -99,7 +99,7 @@ repos:
 
   # this is bettert han the jumanji version as it uses go to build
   - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.12.0-2
+    rev: v3.13.1-1
     hooks:
       - id: shfmt
         stages: [pre-commit]
@@ -114,7 +114,7 @@ repos:
 
   # replace markdownlint-cli with markdownlint-cli2 which is supposed to be faster
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.21.0
+    rev: v0.23.0
     hooks:
       - id: markdownlint-cli2
         args: [--fix]
@@ -123,7 +123,7 @@ repos:
   # prettier for markdown formatting (like shfmt for shell)
   # rbubley fork tracks stable releases (pre-commit/mirrors-prettier is archived)
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: v3.8.1
+    rev: v3.8.5
     hooks:
       - id: prettier
         types_or: [markdown]
@@ -138,7 +138,7 @@ repos:
   # https://github.com/gitleaks/gitleaks - secret scanning (150+ patterns)
   # replaces detect-aws-credentials and detect-private-key with broader coverage
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.30.0
+    rev: v8.30.1
     hooks:
       - id: gitleaks
 
@@ -207,7 +207,7 @@ repos:
   # black, flake8, and pydocstyle
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.15.2
+    rev: v0.15.20
     hooks:
       # Run the linter.
       - id: ruff
@@ -224,7 +224,7 @@ repos:
       - id: jupytext
         args: [--sync, --pipe, ruff]
         additional_dependencies:
-          - ruff==0.15.2
+          - ruff==0.15.20
           #- black==23.3.0
 
   # strips everything out so use pre-commit-jupyter instead
