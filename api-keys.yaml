@@ -323,10 +323,12 @@ REPLICATE_API_KEY:
 
 # ── Local inference (no 1Password — token-less or any-string auth) ───────────
 LM_STUDIO_API_TOKEN:
-  # LM Studio accepts any non-empty string as auth token (localhost only, not validated).
-  # Default "lm-studio" is set in litellm-start.sh — no 1Password entry needed.
+  # LM Studio's server now requires a Bearer token (returns 401 without one) —
+  # any non-empty string works, it is not validated against a real credential.
+  # Default "lm-studio" is set in litellm-start.sh and sync-model.sh — no
+  # 1Password entry needed.
   models_url: http://localhost:1234/v1/models
-  models_auth: none
+  models_auth: bearer
   litellm_model_prefix: "openai/"
   litellm_name_prefix: "lms/"
   litellm_base: http://localhost:1234/v1
